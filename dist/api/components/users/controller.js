@@ -8,7 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const index_1 = __importDefault(require("../auth/index"));
 function default_1(injectedStore, injectedCache) {
     let cache = injectedCache;
     let store = injectedStore;
@@ -27,12 +32,34 @@ function default_1(injectedStore, injectedCache) {
                     reject('Incorrect dates, fill all fields!!!');
                     return false;
                 }
+                const body = {
+                    data: { first_name: datas.first_name,
+                        last_name: datas.last_name ? datas.last_name : null,
+                        phone_number: datas.phone_number ? datas.phone_number : null,
+                        email: datas.email,
+                        dateBirthday: datas.dateBirthday ? datas.dateBirthday : null,
+                        full_name: `${datas.first_name}` + " " + `${datas.last_name}`,
+                        provider: 'gmail',
+                    },
+                    type: type
+                };
+                const registerRespon = yield store.upsert(table, body);
+                const responAuth = yield index_1.default.upsert(registerRespon, {
+                    encrypted_password: yield bcrypt_1.default.hash(datas.password, 5),
+                    id: registerRespon.id,
+                    email: registerRespon.email
+                });
+                console.log(registerRespon, responAuth);
+                const { email } = Object.assign(registerRespon, responAuth);
+                console.log('email controller Auth-->', email);
+                const response = yield index_1.default.insert(email, datas.password);
+                resolve(response);
             }));
         });
     }
-    return {
-        createUser
-    };
 }
 exports.default = default_1;
+return {
+    createUser
+};
 //# sourceMappingURL=controller.js.map

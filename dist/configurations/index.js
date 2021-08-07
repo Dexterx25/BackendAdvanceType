@@ -6,6 +6,9 @@ exports.config = {
         host: process.env.API_HOST || 'localhost',
         port: process.env.API_PORT || 3000
     },
+    jwt: {
+        secret: "apksnfaoknsñgkonañkonñobknañojnsñoidñioajgiodnvañonmasfq11231q@"
+    },
     database: {
         user: process.env.DB_USER_PSQL || 'developuser',
         host: process.env.DB_HOST_PSQL || 'localhost',

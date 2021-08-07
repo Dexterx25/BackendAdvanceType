@@ -1,7 +1,8 @@
 import { Router, Request, Response, NextFunction} from "express";
 import chakl from "chalk"
-export let ServerResponse = () =>{
-    const success = (req:Request, res:Response, message:string, status:number = 200) =>{
+
+export let ServerResponse = {
+      success: function (req:Request, res:Response, message:string, status:number = 200) {
         let statusCode = status || 200;
         let statusMessage = message || '';
     
@@ -10,9 +11,9 @@ export let ServerResponse = () =>{
             status: statusCode,
             body: statusMessage,
         });
-    }
+    },
 
-    const error = (req:Request, res:Response, message:any, status:number) =>{
+     error: function(req:Request, res:Response, message:any, status:number) {
         let statusCode = status || 500;
         let statusMessage = message || 'Internal server error';
 
@@ -22,25 +23,22 @@ export let ServerResponse = () =>{
             body: message,
         });
     }
-
-    return{
-        error,
-        success,
-    }
 }
 
-
-export let ConsoleResponse = () =>{
-    const success = (procedence:string, message:any) =>{
+export let ConsoleResponse = {
+     success: function(procedence:string, message:any) {
          console.warn(`${chakl.red(`[Handle Fatal Error >>> (${procedence})] ===> \n`)}, ${message}`)
-    }
-    
-    const error = (procedence:string, message:string) =>{
+    },
+     error : function(procedence:string, message:string){
          console.warn(`${chakl.greenBright(`[Success Response >>> (${procedence})] ===> \n`)}, ${message}`)
     }
 
-    return{
-        error,
-        success,
+}
+
+export let CustomRespon :any ={
+    error: function (err:any, req:Request, res:Response, next?:NextFunction) : any{
+        const message = err.message || 'Error interno';
+        const status = err.statusCode || 500;
+        ServerResponse.error(req, res, message, status);
     }
 }
